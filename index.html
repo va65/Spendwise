@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>Spend<span>Wise</span></h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" onclick="switchPage(event, 'dashboard', this)">Dashboard</a>
+                <a href="#" class="nav-link" onclick="switchPage(event, 'transactions', this)">Transactions</a>
+                <a href="#" class="nav-link" onclick="switchPage(event, 'budget', this)">Budget</a>
+                <a href="#" class="nav-link" onclick="switchPage(event, 'categories', this)">Category Limits</a>
+                <a href="#" class="nav-link" onclick="switchPage(event, 'savings', this)">Savings Goals</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1>Welcome Back, Student!</h1>
+                    <p>Track your finances, manage budgets, and achieve your savings goals.</p>
+                </div>
+                <button type="button" class="btn-primary" onclick="openModal()">+ Add Transaction</button>
+            </header>
+
+            <!-- 1. Dashboard Page -->
+            <section id="dashboard" class="content-section">
+                <div class="summary-grid">
+                    <div class="card balance-card">
+                        <h3>Total Balance</h3>
+                        <p id="balance" class="amount">₹0.00</p>
+                        <small class="card-sub">Overall net balance</small>
+                    </div>
+                    <div class="card income-card">
+                        <h3>Total Income</h3>
+                        <p id="income" class="amount">₹0.00</p>
+                        <small class="card-sub">Income & refunds</small>
+                    </div>
+                    <div class="card expense-card">
+                        <h3>Total Expenses</h3>
+                        <p id="expenses" class="amount">₹0.00</p>
+                        <small class="card-sub">All-time spending</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-header">
+                        <h3>Quick Overview — Monthly Budget</h3>
+                        <button type="button" class="btn-secondary" onclick="switchPage(event, 'budget', document.querySelectorAll('.nav-link')[2])">Manage Budget</button>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="dashBudgetProgress"></div>
+                    </div>
+                    <p id="dashBudgetText" style="color: #94a3b8; font-size: 0.9rem;">₹0 spent of ₹5,000</p>
+                </div>
+            </section>
+
+            <!-- 2. Transactions Page -->
+            <section id="transactions" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>All Transactions</h2>
+                    <button type="button" class="btn-primary" onclick="openModal()">+ New Entry</button>
+                </div>
+                <div id="transactionList" class="card">
+                    <p class="empty-state">No transactions added yet.</p>
+                </div>
+            </section>
+
+            <!-- 3. Monthly Budget Page -->
+            <section id="budget" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Monthly Budget Planner</h2>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="card">
+                        <h3>Monthly Budget Limit</h3>
+                        <p id="totalBudget" class="amount" style="color: #c084fc;">₹5,000</p>
+                        <small class="card-sub">Your spending limit</small>
+                    </div>
+                    <div class="card">
+                        <h3>Spent This Month</h3>
+                        <p id="totalSpent" class="amount" style="color: #f87171;">₹0</p>
+                        <small class="card-sub">Current month expenses</small>
+                    </div>
+                    <div class="card">
+                        <h3>Remaining Budget</h3>
+                        <p id="remaining" class="amount" style="color: #34d399;">₹5,000</p>
+                        <small class="card-sub">Money left this month</small>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Monthly Budget Progress</h3>
+                        <span id="budgetPercentage" style="color: #94a3b8; font-size: 0.9rem;">0% of your budget used</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="budgetProgress"></div>
+                    </div>
+                    <div id="budgetAlert" class="alert"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Set Monthly Budget Limit</h3>
+                    <div id="budgetMessage" class="success"></div>
+                    <form id="budgetForm" class="inline-form">
+                        <input type="number" id="monthlyBudget" min="1" placeholder="Enter monthly budget amount (₹)" required>
+                        <button class="btn-primary" type="submit">Save Budget</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 4. Category-wise Budget Page -->
+            <section id="categories" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Category-wise Budget</h2>
+                </div>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3>Set Category Spending Limit</h3>
+                    <form id="categoryForm" class="row-form">
+                        <select id="categoryName" required>
+                            <option value="">Choose Category</option>
+                            <option>Food & Dining</option>
+                            <option>Transportation</option>
+                            <option>Shopping</option>
+                            <option>Education</option>
+                            <option>Entertainment</option>
+                            <option>Health</option>
+                            <option>Rent & Bills</option>
+                            <option>Other</option>
+                        </select>
+                        <input type="number" id="categoryLimit" min="1" placeholder="Spending limit (₹)" required>
+                        <button class="btn-primary" type="submit">Set Limit</button>
+                    </form>
+                </div>
+
+                <div class="category-list" id="categoryList"></div>
+            </section>
+
+            <!-- 5. Savings Goals Page -->
+            <section id="savings" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>My Savings Goal 🎯</h2>
+                </div>
+
+                <div class="goal-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <small style="color: #c084fc; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Active Target</small>
+                            <h3 id="goalName" style="font-size: 1.35rem; color: #ffffff; margin-top: 4px;">Emergency Fund / Laptop</h3>
+                        </div>
+                        <h2 id="goalProgressText" style="color: #34d399; font-size: 1.6rem;">₹0 / ₹10,000</h2>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar" id="savingsProgress" style="background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                    </div>
+
+                    <p id="savingsPercentage" style="color: #cbd5e1; font-size: 0.9rem;">0% completed</p>
+                </div>
+
+                <div class="card">
+                    <h3>Update Savings Goal</h3>
+                    <div id="savingsMessage" class="success"></div>
+                    <form id="savingsForm">
+                        <div class="form-row">
+                            <div>
+                                <label>Savings Goal Name</label>
+                                <input type="text" id="goalTitle" placeholder="e.g. New Laptop" required>
+                            </div>
+                            <div>
+                                <label>Target Amount (₹)</label>
+                                <input type="number" id="goalAmount" min="1" placeholder="Target amount" required>
+                            </div>
+                            <div>
+                                <label>Amount Saved (₹)</label>
+                                <input type="number" id="savedAmount" min="0" placeholder="Amount saved" required>
+                            </div>
+                        </div>
+                        <button class="btn-primary" type="submit" style="margin-top: 0.75rem;">Update Savings Goal</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div id="transactionModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            
+            <div class="heading">
+                <h1>Add Transaction</h1>
+                <p>Keep track of your money and stay in control of your finances.</p>
+            </div>
+
+            <div class="modal-form-card">
+                <div id="message" class="message">
+                    ✓ Transaction saved successfully!
+                </div>
+
+                <form id="transactionForm">
+                    <label>Transaction Type</label>
+                    <div class="type-selection">
+                        <button type="button" class="active" onclick="setType('Expense', this)">Expense</button>
+                        <button type="button" onclick="setType('Income', this)">Income</button>
+                        <button type="button" onclick="setType('Refund', this)">Refund</button>
+                    </div>
+
+                    <input type="hidden" id="type" value="Expense">
+
+                    <label>Amount (₹)</label>
+                    <div class="amount-box">
+                        <span>₹</span>
+                        <input type="number" id="amount" placeholder="0.00" min="0.01" step="0.01" required>
+                    </div>
+
+                    <div class="row">
+                        <div>
+                            <label>Category</label>
+                            <select id="category" required>
+                                <option value="">Select Category</option>
+                                <option>Food & Dining</option>
+                                <option>Transportation</option>
+                                <option>Shopping</option>
+                                <option>Education</option>
+                                <option>Entertainment</option>
+                                <option>Health</option>
+                                <option>Rent & Bills</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div>
+                            <label>Payment Method</label>
+                            <select id="payment" required>
+                                <option value="">Select Method</option>
+                                <option>Cash</option>
+                                <option>UPI</option>
+                                <option>Debit Card</option>
+                                <option>Credit Card</option>
+                                <option>Net Banking</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>Transaction Title</label>
+                            <input type="text" id="title" placeholder="e.g. Grocery Shopping" required>
+                        </div>
+                    </div>
+
+                    <label>Description (Optional)</label>
+                    <textarea id="description" placeholder="Add some details about this transaction..."></textarea>
+
+                    <button type="submit" class="save-btn">+ Save Transaction</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal()">Cancel and go back</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
